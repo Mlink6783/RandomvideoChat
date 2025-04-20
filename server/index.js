@@ -1,31 +1,14 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
-
-const app = express();
-app.use(cors());
-
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
-});
-
+// In server/index.js
 let waitingUser = null;
-let activeUsers = [];
+let activeUsers = []; // Track all active users
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('User connected:', socket.id);
 
-  // Add new user to active users list
-  activeUsers.push(socket);
-
-  socket.on('join', (username) => {
+  socket.on('join', username => {
     socket.username = username;
+    activeUsers.push(socket); // Add user to the activeUsers list
 
-    // Try to match with a waiting user
     if (waitingUser) {
       const partner = waitingUser;
       waitingUser = null;
@@ -41,44 +24,54 @@ io.on('connection', (socket) => {
   });
 
   socket.on('next', () => {
-    // Remove the current user from the active users list if they have a partner
     if (socket.partner) {
-      socket.partner.emit('disconnectPeer');
+      socket.partner.emit('disconnectPeer'); // Disconnect the partner
       socket.partner.partner = null;
+      socket.partner = null;
     }
-
-    // Disconnect the current user
-    socket.partner = null;
-
-    // Ensure there is at least one other user
-    if (activeUsers.length > 1) {
-      // Remove this user from the active list
-      activeUsers = activeUsers.filter(user => user !== socket);
-
-      // Pick a random user from the remaining active users
-      const randomUser = activeUsers[Math.floor(Math.random() * activeUsers.length)];
-
-      socket.partner = randomUser;
-      randomUser.partner = socket;
-
-      // Emit offer-request to both users
-      socket.emit('offer-request');
-      randomUser.emit('offer-request');
-    } else {
+    if (waitingUser === null) {
       waitingUser = socket;
+    } else {
+      const partner = waitingUser;
+      waitingUser = null;
+      socket.partner = partner;
+      partner.partner = socket;
+
+      socket.emit('offer-request');
+      partner.emit('offer-request');
     }
   });
 
   socket.on('disconnect', () => {
-    // Remove user from active users list
     activeUsers = activeUsers.filter(user => user !== socket);
-    if (waitingUser === socket) waitingUser = null;
+    console.log("User disconnected. Active users: ", activeUsers.length);
 
+    if (waitingUser === socket) waitingUser = null;
     if (socket.partner) {
       socket.partner.emit('disconnectPeer');
       socket.partner.partner = null;
     }
   });
 });
+Client Side (App.js):
+The next button click should trigger a reconnection and properly match with another user.
 
-server.listen(5000, () => console.log('Server running on port 5000'));
+Here’s the updated logic for the client-side handleNext function:
+
+javascript
+Copy
+Edit
+const handleNext = () => {
+  socket.emit('next');  // Emit "next" event to backend to find a new partner
+  endCall();
+  startCall();  // Start a new call after disconnecting the current one
+};
+
+const endCall = () => {
+  if (peerRef.current) peerRef.current.close();
+  if (localStream.current) {
+    localStream.current.getTracks().forEach(track => track.stop());  // Stop tracks to release camera/microphone
+  }
+  peerRef.current = null;
+  remoteVideo.current.srcObject = null;
+};
