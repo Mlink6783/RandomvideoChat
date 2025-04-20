@@ -1,42 +1,39 @@
 /* App.css */
 
+/* Body styles */
 body {
   font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  background-color: #f4f7fc;
-  color: #333;
 }
 
-/* Main container */
+/* App container */
 .app-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh;
   text-align: center;
-  padding: 20px;
 }
 
-/* Header styles */
+/* Header section */
 .app-header {
   margin-bottom: 20px;
 }
 
 .title {
-  font-size: 36px;
-  font-weight: bold;
-  color: #2b2d42;
+  font-size: 2rem;
+  color: #333;
 }
 
 .app-header p {
-  font-size: 16px;
-  color: #4f4f4f;
+  color: #666;
+  font-size: 1rem;
 }
 
-/* Login Section */
+/* Login section */
 .login-container {
   display: flex;
   flex-direction: column;
@@ -47,28 +44,27 @@ body {
   padding: 10px;
   width: 80%;
   max-width: 300px;
-  margin-bottom: 20px;
-  border: 2px solid #2b2d42;
-  border-radius: 8px;
-  font-size: 16px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
 }
 
 .login-button {
-  padding: 12px 24px;
-  background-color: #2b2d42;
+  padding: 10px 20px;
+  background-color: #007bff;
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .login-button:hover {
-  background-color: #1c1f29;
+  background-color: #0056b3;
 }
 
-/* Video Chat Section */
+/* Video chat section */
 .video-chat-container {
   display: flex;
   flex-direction: column;
@@ -77,52 +73,44 @@ body {
 
 .videos {
   display: flex;
-  justify-content: center;
   gap: 20px;
+  justify-content: center;
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 
 .local-video, .remote-video {
   width: 100%;
   max-width: 400px;
-  height: 300px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border: 2px solid #2b2d42;
+  border: 2px solid #ccc;
 }
 
 .next-button {
-  padding: 12px 24px;
-  background-color: #2b2d42;
+  padding: 10px 20px;
+  background-color: #28a745;
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .next-button:hover {
-  background-color: #1c1f29;
+  background-color: #218838;
 }
 
-/* Media Queries for responsiveness */
-@media (max-width: 600px) {
-  .local-video, .remote-video {
-    max-width: 90%;
-    height: auto;
-  }
-
+/* Mobile responsiveness */
+@media (max-width: 768px) {
   .videos {
     flex-direction: column;
     gap: 10px;
   }
-}
 
-@media (max-width: 800px) {
-  .videos {
-    flex-direction: column;
-    gap: 20px;
+  .local-video, .remote-video {
+    max-width: 100%;
+  }
+
+  .username-input {
+    width: 90%;
   }
 }
