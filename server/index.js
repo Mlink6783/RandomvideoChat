@@ -84,6 +84,35 @@ io.on('connection', socket => {
       socket.partner.partner = null;
     }
   });
+  let activeUsers = [];
+
+io.on('connection', (socket) => {
+    // Add the new user to the active users list
+    activeUsers.push(socket);
+
+    console.log("New user connected. Active users: ", activeUsers.length);
+
+    // Handle "next" button click
+    socket.on('next', () => {
+        if (activeUsers.length > 1) {
+            // Pick a random user from activeUsers list
+            const randomUser = activeUsers[Math.floor(Math.random() * activeUsers.length)];
+
+            // Emit to the current user
+            socket.emit('matched', { userId: randomUser.id });
+
+            // Emit to the random user to notify match
+            randomUser.emit('matched', { userId: socket.id });
+        }
+    });
+
+    // Remove user from activeUsers list on disconnect
+    socket.on('disconnect', () => {
+        activeUsers = activeUsers.filter((user) => user !== socket);
+        console.log("User disconnected. Active users: ", activeUsers.length);
+    });
+});
+
 });
 
 server.listen(5000, () => console.log('Server running on port 5000'));
