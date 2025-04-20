@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // replace with your Render backend URL
+const socket = io('https://video-chat-server-u6vg.onrender.com');
+ // replace with your Render backend URL
 
 function App() {
   const [username, setUsername] = useState('');
