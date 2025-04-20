@@ -11,6 +11,9 @@ function App() {
   const peerRef = useRef();
   const localStream = useRef();
 
+  // Flag to ensure that media devices are not accessed repeatedly
+  const mediaInitialized = useRef(false);
+
   useEffect(() => {
     socket.on('offer', async (offer) => {
       peerRef.current = createPeer(false);
@@ -35,12 +38,17 @@ function App() {
     return () => socket.disconnect();
   }, []);
 
+  // Start the call: Check if media devices are already initialized
   const startCall = async () => {
-    localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    localVideo.current.srcObject = localStream.current;
+    if (!mediaInitialized.current) {
+      localStream.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localVideo.current.srcObject = localStream.current;
+      mediaInitialized.current = true;
+    }
     socket.emit('ready');
   };
 
+  // Create peer connection
   const createPeer = (initiator = true) => {
     const peer = new RTCPeerConnection();
     peer.onicecandidate = (e) => {
@@ -59,6 +67,7 @@ function App() {
     return peer;
   };
 
+  // Handle login button
   const handleLogin = () => {
     if (username.trim()) {
       socket.emit('join', username);
@@ -67,12 +76,14 @@ function App() {
     }
   };
 
+  // Handle next button
   const handleNext = () => {
     socket.emit('next');
     endCall();
     startCall(); // Only reinitialize local media once
   };
 
+  // End the call
   const endCall = () => {
     if (peerRef.current) peerRef.current.close();
     peerRef.current = null;
