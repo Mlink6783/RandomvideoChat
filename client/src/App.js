@@ -69,19 +69,20 @@ function App() {
   };
 
   const handleNext = () => {
-    socket.emit('next');
-    endCall();
-    startCall();
-  };
+  socket.emit('next');  // Emit "next" event to backend to find a new partner
+  endCall();
+  startCall();  // Start a new call after disconnecting the current one
+};
 
-  const endCall = () => {
-    if (peerRef.current) peerRef.current.close();
-    if (localStream.current) {
-      localStream.current.getTracks().forEach(track => track.stop());
-    }
-    peerRef.current = null;
-    remoteVideo.current.srcObject = null;
-  };
+const endCall = () => {
+  if (peerRef.current) peerRef.current.close();
+  if (localStream.current) {
+    localStream.current.getTracks().forEach(track => track.stop());  // Stop tracks to release camera/microphone
+  }
+  peerRef.current = null;
+  remoteVideo.current.srcObject = null;
+};
+
 
   return (
     <div className="app-container">
