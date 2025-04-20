@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import './App.css'; // Importing the new CSS for styling
 
-const socket = io('https://video-chat-server-u6vg.onrender.com');
+const socket = io('https://video-chat-server-u6vg.onrender.com'); // Replace with your backend URL
 
 function App() {
   const [username, setUsername] = useState('');
@@ -76,6 +76,9 @@ function App() {
 
   const endCall = () => {
     if (peerRef.current) peerRef.current.close();
+    if (localStream.current) {
+      localStream.current.getTracks().forEach(track => track.stop());
+    }
     peerRef.current = null;
     remoteVideo.current.srcObject = null;
   };
