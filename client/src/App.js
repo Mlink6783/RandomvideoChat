@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('https://video-chat-server-u6vg.onrender.com'); // replace with your Render backend URL
+const socket = io('https://video-chat-server-u6vg.onrender.com'); // Replace with your backend URL
 
 function App() {
   const [username, setUsername] = useState('');
@@ -61,16 +61,16 @@ function App() {
 
   const handleLogin = () => {
     if (username.trim()) {
-      socket.emit('join', username); // Notify server about joining
+      socket.emit('join', username);
       setInCall(true);
       startCall();
     }
   };
 
   const handleNext = () => {
-    socket.emit('next'); // Tell server to find a new user
-    endCall(); // Close previous peer connection
-    startCall(); // Start a new call with the new user
+    socket.emit('next');
+    endCall();
+    startCall(); // Only reinitialize local media once
   };
 
   const endCall = () => {
@@ -92,13 +92,7 @@ function App() {
             style={{ padding: 10, width: '80%', maxWidth: 300, marginBottom: 10 }}
           />
           <br />
-          <button
-            onClick={handleLogin}
-            style={{ padding: '10px 20px' }}
-            disabled={!username.trim()} // Disable join if no username
-          >
-            Join
-          </button>
+          <button onClick={handleLogin} style={{ padding: '10px 20px' }}>Join</button>
         </div>
       ) : (
         <div>
@@ -113,9 +107,7 @@ function App() {
             <video ref={localVideo} autoPlay muted playsInline style={{ width: '100%', maxWidth: 300, borderRadius: 10 }} />
             <video ref={remoteVideo} autoPlay playsInline style={{ width: '100%', maxWidth: 300, borderRadius: 10 }} />
           </div>
-          <button onClick={handleNext} style={{ marginTop: 20, padding: '10px 20px' }}>
-            Next
-          </button>
+          <button onClick={handleNext} style={{ marginTop: 20, padding: '10px 20px' }}>Next</button>
         </div>
       )}
     </div>
